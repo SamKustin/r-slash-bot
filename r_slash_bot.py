@@ -16,7 +16,7 @@ rss_url = url + "/.rss"
 feed = feedparser.parse(rss_url)
 
 num_posts = 25 # number of posts to tweet
-wait_time = 10 # wait 10 minutes between each post
+wait_time = 20 # wait 20 minutes between each post
 
 for i in range (num_posts):
     post_title = feed["entries"][i]["title"]
@@ -33,33 +33,52 @@ for i in range (num_posts):
         # This should be the link to the image/gif
         image_link = match[2]
 
-        # Creates a local temp_file.extension to put the image into
+        # Gets the extension for the image file
         extension = image_link.split('.')[-1]
-        if extension != "gifv":
-            image_file = "temp." + extension
 
-            request = requests.get(image_link, stream=True)
-            if request.status_code == 200:
-                # Downloads the image
-                with open(image_file, 'wb') as image:
-                    for chunk in request:
-                        image.write(chunk)
+        # Changes extensions to gif and jpg
+        if extension != "jpg":
+            if extension == "gifv":
+                extension = "gif"
+                print("Error: Cannot download .gifv extension. Changing to .gif extension.")
+                # Modify the image link to reflect the change in extension.
+                image_link = image_link.replace(image_link.split('.')[-1], extension)
+                print("New image_link: " + image_link)
+            else:
+                extension = "jpg"
+                print("Error: Cannot download imgur url. Appending .jpg extension onto imgur url.")
+                # Modify the image link to reflect the change in extension.
+                # Need for imgur urls: imgur.com/picture -> imgur.com/picture.jpg
+                image_link = image_link + ".jpg"
+                print("New image_link: " + image_link)
 
+        image_file = "temp." + extension
+
+        # Creates a local temp_file.extension to put the image into
+        request = requests.get(image_link, stream=True)
+        if request.status_code == 200:
+            # Downloads the image
+            with open(image_file, 'wb') as image:
+                for chunk in request:
+                    image.write(chunk)
+
+            # Checks if the image isn't over 3,072,000 bytes (3072 KB)
+            file_stats = os.stat(image_file)
+            file_size = file_stats.st_size
+
+            if (file_size <= 3072000):
                 # Posts tweet to twitter
                 api.update_with_media(image_file, status=tweet_text)
                 print("I posted a tweet! Check @r_slash_bot")
-
-                # Remove local image_file
-                os.remove(image_file)
-
-                # Waits 30 minutes before next tweet
-                if i != num_posts - 1:
-                    time.sleep(60 * wait_time)
-
             else:
-                print("Error: Cannot download image. Skipping this post.")
-        else:
-            print("Error: Cannot download gifv file type. Skipping this post.")
+                print("Error: image_file is too big (" + str(file_size) + " bytes). Cannot be posted.")
+
+            # Remove local image_file
+            os.remove(image_file)
+
+            Waits 20 minutes before next tweet
+            if i != num_posts - 1:
+                time.sleep(60 * wait_time)
 
 # ========================================================================
 
