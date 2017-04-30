@@ -15,7 +15,8 @@ url = "http://www.reddit.com/r/" + subreddit
 rss_url = url + "/.rss"
 feed = feedparser.parse(rss_url)
 
-num_posts = 25
+num_posts = 25 # number of posts to tweet
+wait_time = 10 # wait 10 minutes between each post
 
 for i in range (num_posts):
     post_title = feed["entries"][i]["title"]
@@ -46,14 +47,14 @@ for i in range (num_posts):
 
                 # Posts tweet to twitter
                 api.update_with_media(image_file, status=tweet_text)
-                print("I posted a tweet! Check @CoreProjectBot")
+                print("I posted a tweet! Check @r_slash_bot")
 
                 # Remove local image_file
                 os.remove(image_file)
 
-                # Waits 5 minutes before next tweet
+                # Waits 30 minutes before next tweet
                 if i != num_posts - 1:
-                    time.sleep(60 * 5)
+                    time.sleep(60 * wait_time)
 
             else:
                 print("Error: Cannot download image. Skipping this post.")

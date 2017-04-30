@@ -1,7 +1,7 @@
 # r_slash_bot
 A twitter bot which reads reddit posts and posts them to twitter @r_slash_bot
 
-Currently, this bot tweets the top posts from r/aww every 5 minutes.
+Currently, this bot tweets the top posts from r/aww every 10 minutes.
 
 This bot was created using Python. However, it does not run 24/7.
 Instead, the program must be run through terminal and kept in the background.
