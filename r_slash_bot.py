@@ -66,19 +66,19 @@ for i in range (num_posts):
             file_stats = os.stat(image_file)
             file_size = file_stats.st_size
 
-            if (file_size <= 3072000):
+            if file_size > 3072000:
+                print("Error: image_file is too big (" + str(file_size) + " bytes). Cannot be posted.")
+            else:
                 # Posts tweet to twitter
                 api.update_with_media(image_file, status=tweet_text)
                 print("I posted a tweet! Check @r_slash_bot")
-            else:
-                print("Error: image_file is too big (" + str(file_size) + " bytes). Cannot be posted.")
+
+                # Waits 20 minutes before next tweet
+                if i != num_posts - 1:
+                    time.sleep(60 * wait_time)
 
             # Remove local image_file
             os.remove(image_file)
-
-            # Waits 20 minutes before next tweet
-            if i != num_posts - 1:
-                time.sleep(60 * wait_time)
 
 # ========================================================================
 
