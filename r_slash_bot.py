@@ -76,7 +76,7 @@ for i in range (num_posts):
             # Remove local image_file
             os.remove(image_file)
 
-            Waits 20 minutes before next tweet
+            # Waits 20 minutes before next tweet
             if i != num_posts - 1:
                 time.sleep(60 * wait_time)
 
